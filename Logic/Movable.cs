@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -15,39 +14,72 @@ using UnityEngine;
 /// </summary>
 public class Movable : MonoBehaviour
 {
+    [SerializeField] private float testReduction = 1f;
+
     private Vector3 _from;
     private Vector3 _to;
     private float _howFar;
     [SerializeField] private float speed = 1f;
-    private bool _idle = true;
+    [SerializeField] private float speedToTransform = 1f;
+    protected bool _idle = true;
     public bool Idle => _idle;
-    
-    public IEnumerator MoveToPosition(Vector3 targetPosition, bool isMatched = false)
+
+    public IEnumerator MoveToPosition(Vector3 targetPosition)
     {
         if (speed <= 0f)
-            throw new System.ArgumentOutOfRangeException("Speed cannot be less than or equal to 0");
-        _idle = false;
+        {
+            Debug.LogError("Speed cannot be less than or equal to 0");
+        }
+
         _from = transform.position;
         _to = targetPosition;
         _howFar = 0f;
+        _idle = false;
+
         do
         {
             _howFar += speed * Time.deltaTime;
-            if(_howFar > 1f)
+            if (_howFar > 1f)
                 _howFar = 1f;
-            transform.position = Vector3.LerpUnclamped(_from, _to, EasingFunction(_howFar));
+            transform.position = Vector3.LerpUnclamped(_from, _to, Easing(_howFar));
             yield return null;
-        }
-        while (_howFar != 1f);
+        } while (_howFar != 1f);
+
         _idle = true;
-        speed = 1f;
     }
-    
-    private float EasingFunction(float x)
+
+    public IEnumerator MoveToTransform(Transform target)
     {
-        // return x * x;
-        return x * x * (3f - 2f * x);
-        // return x * x * x * (x * (x * 6f - 15f) + 10f);
+        if (speed <= 0f)
+        {
+            Debug.LogWarning("Speed cannot be less than or equal to 0");
+        }
+
+        _from = transform.position;
+        _to = target.position;
+        _howFar = 0f;
+        _idle = false;
+
+        do
+        {
+            _howFar += speed * Time.deltaTime;
+            if (_howFar > 1f)
+            {
+                _howFar = 1f;
+            }
+            print($"_howFar: {speed * Time.deltaTime}");
+
+            _to = target.position;
+            transform.position = Vector3.LerpUnclamped(_from, _to, Easing(1));
+            Debug.Break();
+            yield return null;
+        } while (_howFar < 1f);
+
+        _idle = true;
     }
-    
+
+    private float Easing(float t)
+    {
+        return Mathf.Clamp01(t * t * (3f - 2f * t));
+    }
 }

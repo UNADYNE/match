@@ -26,6 +26,7 @@ namespace Tools
         {
             if(dimensions.x < 1 || dimensions.y < 1)
                 Debug.LogError("Grid dimensions must be greater than 0");
+            
             _dimensions = dimensions;
             _data = new T[dimensions.x, dimensions.y];
             _isReady = true;
@@ -38,22 +39,22 @@ namespace Tools
         }
         // check bounds of grid
 
-        public bool CheckBounds(int x, int y)
+        public bool BoundsCheck(int x, int y)
         {
             if(!_isReady)
                 Debug.LogError("Grid has not been initialized");
             return x >= 0 && x < _dimensions.x && y >= 0 && y < _dimensions.y;
         }
         
-        public bool CheckBounds(Vector2Int position)
+        public bool BoundsCheck(Vector2Int position)
         {
-            return CheckBounds(position.x, position.y);
+            return BoundsCheck(position.x, position.y);
         }
         
         // check if grid position is empty
         public bool IsEmpty(int x, int y)
         {
-            if(!CheckBounds(x, y))
+            if(!BoundsCheck(x, y))
                 Debug.LogError($"(${x}, ${y}) are not on the grid.");
             return EqualityComparer<T>.Default.Equals(_data[x, y], default(T));
         }
@@ -66,7 +67,7 @@ namespace Tools
         // put item on grid
         public bool PutItemAt(T item, int x, int y, bool allowOverwrite = false)
         {
-           if(!CheckBounds(x, y))
+           if(!BoundsCheck(x, y))
                Debug.LogError($"(${x}, ${y}) are not on the grid.");
 
            if (!allowOverwrite && !IsEmpty(x, y)) return false;
@@ -82,7 +83,7 @@ namespace Tools
         // get item from grid
         public T GetItemAt(int x, int y)
         {
-            if(!CheckBounds(x, y))
+            if(!BoundsCheck(x, y))
                 Debug.LogError($"(${x}, ${y}) are not on the grid.");
             return _data[x, y];
         }
@@ -95,7 +96,7 @@ namespace Tools
         // remove item from grid
         public T RemoveItemAt(int x, int y)
         {
-            if(!CheckBounds(x, y))
+            if(!BoundsCheck(x, y))
                 Debug.LogError($"(${x}, ${y}) are not on the grid.");
             T temp = _data[x, y];
             _data[x, y] = default(T);
@@ -109,10 +110,10 @@ namespace Tools
         
         public bool MoveItemTo(int x1, int y1, int x2, int y2, bool allowOverwrite = false)
         {
-            if(!CheckBounds(x1, y1))
+            if(!BoundsCheck(x1, y1))
                 Debug.LogError($"(${x1}, ${y1}) are not on the grid.");
             
-            if(!CheckBounds(x2, y2))
+            if(!BoundsCheck(x2, y2))
                 Debug.LogError($"(${x2}, ${y2}) are not on the grid.");
 
             if (!allowOverwrite && !IsEmpty(x2, y2)) return false;
@@ -130,8 +131,8 @@ namespace Tools
 
         public void SwapItemsAt(int x1, int y1, int x2, int y2)
         {
-            CheckBounds(x1, y1);
-            CheckBounds(x2, y2);
+            BoundsCheck(x1, y1);
+            BoundsCheck(x2, y2);
 
             T temp = _data[x1, y1];
             _data[x1, y1] = _data[x2, y2];

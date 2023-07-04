@@ -27,7 +27,7 @@ namespace Management
             // display loading screen
 
             // pool the matchables
-            _pool.PoolObjects(dimensions.x * dimensions.y * 2);
+            _pool.PoolObjects(dimensions.x * dimensions.y * 10);
             
             // initialize the grid
             _grid.InitializeGrid(dimensions);
